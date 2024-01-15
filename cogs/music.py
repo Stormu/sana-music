@@ -212,7 +212,7 @@ class Music(commands.Cog):
         channel = guild.get_channel(channel_id)
 
         if channel:
-            embed = discord.Embed(color=discord.Color.blurple(), title=f'Now Playing', description=f'[{event.track.title}({event.track.uri})')
+            embed = discord.Embed(color=discord.Color.blurple(), title=f'Now Playing', description=f'[{event.track.title}]({event.track.uri})')
             embed.set_thumbnail(url=None or event.track.artwork_url)
             await channel.send(embed=embed)
 
