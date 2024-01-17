@@ -365,19 +365,43 @@ class Music(commands.Cog):
         player = self.bot.lavalink.player_manager.get(ctx.guild.id)
 
         await player.skip();
-        embed = discord.Embed(color=discord.Color.blurple())
         if(player.current == None):
+            embed = discord.Embed(color=discord.Color.blurple())
             embed.description = 'End of the queue reached.'
-        await ctx.send(embed=embed)
+            await ctx.send(embed=embed)
     
     @commands.command(aliases=['c'])
     @commands.check(create_player)
     async def current(self, ctx):
 
         player = self.bot.lavalink.player_manager.get(ctx.guild.id)
-        print(f'{player.current}')
-        embed = discord.Embed(color=discord.Color.blurple())
-        embed.description = f'Now playing {player.current.title}'
+        
+        embed = discord.Embed(color=discord.Color.blurple(), title="Currently Playing")
+        embed.description = f'[{player.current.title}]({player.current.uri})'
+        embed.set_thumbnail(url=None or player.current.artwork_url)
+        await ctx.send(embed=embed)
+
+    @commands.command(aliases=['n'])
+    @commands.check(create_player)
+    async def next(self, ctx):
+
+        player = self.bot.lavalink.player_manager.get(ctx.guild.id)
+
+        embed = discord.Embed(color=discord.Color.blurple(), title="Queued Up")
+        if(len(player.queue) <= 0):
+            embed.description = 'No tracks found waiting to be played!'
+            await ctx.send(embed=embed)
+            return
+        trackNumber = 1
+        description = ""
+        for track in player.queue:
+            if(trackNumber > 5):
+                embed.set_footer(text=f'And {len(player.queue) - 5} more...')
+                break
+            description = f'{description}{trackNumber}. [{track.title}]({track.uri})\n'
+            trackNumber+=1
+        embed.description = description
+        embed.set_thumbnail(url=None or player.queue[0].artwork_url)
         await ctx.send(embed=embed)
 
 async def setup(bot):
